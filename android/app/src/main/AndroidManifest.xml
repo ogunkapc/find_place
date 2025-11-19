@@ -8,6 +8,10 @@
         android:label="find_place"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- TODO: remove Google Maps API key here -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDXqAmnUolNjA2y01-phtjDWoNe0vyCeLM"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
