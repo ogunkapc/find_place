@@ -1,3 +1,4 @@
+import 'package:find_place/src/locations.dart' as locations;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -13,11 +14,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late GoogleMapController mapController;
-  final LatLng _center = const LatLng(45.521563, -122.677433);
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+  final Map<String, Marker> _markers = {};
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    final googleOffices = await locations.getGoogleOffices();
+    setState(() {
+      _markers.clear();
+      for (final office in googleOffices.offices) {
+        final marker = Marker(
+          markerId: MarkerId(office.name),
+          position: LatLng(office.lat, office.lng),
+          infoWindow: InfoWindow(title: office.name, snippet: office.address),
+        );
+        _markers[office.name] = marker;
+      }
+    });
   }
 
   @override
@@ -25,10 +35,11 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green[700]),
       home: Scaffold(
-        appBar: AppBar(title: Text("Find Place"), elevation: 2),
+        appBar: AppBar(title: Text("Google Office Locations"), elevation: 2),
         body: GoogleMap(
-          initialCameraPosition: CameraPosition(target: _center, zoom: 11.0),
+          initialCameraPosition: CameraPosition(target: LatLng(0, 0), zoom: 2),
           onMapCreated: _onMapCreated,
+          markers: _markers.values.toSet(),
         ),
       ),
     );
